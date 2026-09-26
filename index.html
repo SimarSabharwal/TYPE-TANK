@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TYPE//TANK - Retro Arcade Typing Defense</title>
+  <!-- Retro Arcade Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="crt-enabled">
+
+  <!-- Main Arcade Frame -->
+  <div id="arcade-wrapper" class="aspect-auto">
+
+    <!-- Header Marquee HUD Bar -->
+    <header id="marquee-header">
+      <div class="brand-title">
+        <span class="glowing-green">TYPE//TANK</span>
+        <span class="sys-sub">[v2.4 CRT]</span>
+      </div>
+
+      <div class="hud-status-group">
+        <div class="hud-item">
+          <span class="hud-label">OPERATOR:</span>
+          <span id="header-callsign" class="hud-val">OPERATOR-1</span>
+          <button id="btn-switch-callsign" class="btn-micro" title="Switch Operator Callsign">[SWITCH]</button>
+        </div>
+
+        <div class="hud-item">
+          <span class="hud-label">MODE:</span>
+          <span id="header-mode" class="hud-val">MODE 1 [ALPHA]</span>
+        </div>
+      </div>
+
+      <div class="hud-actions-group">
+        <button id="btn-toggle-crt" class="btn-hud" title="Toggle CRT Scanline Effect">CRT: ON</button>
+        <button id="btn-toggle-audio" class="btn-hud" title="Toggle Audio Sound Effects">SOUND: ON</button>
+        <button id="btn-toggle-aspect" class="btn-hud" title="Toggle Display Aspect Ratio">ASPECT: AUTO</button>
+        <button id="btn-nav-records" class="btn-hud btn-amber" title="View Operator Flight Logs">LOGS [R]</button>
+      </div>
+    </header>
+
+    <!-- Arcade Cabinet Screen Container -->
+    <main id="cabinet-viewport">
+      <!-- CRT Overlay Effect -->
+      <div id="crt-overlay"></div>
+
+      <!-- Confetti Canvas overlay for Record Celebration -->
+      <canvas id="confetti-canvas"></canvas>
+
+      <!-- ================= SCREEN 1: LOGIN ================= -->
+      <section id="screen-login" class="screen active">
+        <div class="dos-box login-box">
+          <div class="dos-box-header">+---[ OPERATOR AUTHENTICATION ]---+</div>
+          <div class="dos-box-content">
+            <pre class="ascii-logo">
+ _____ _   _____________   _____ ___   _   _ 
+|_   _| | | | ___ \  ___| |_   _/ _ \ | \| | |/ /
+  | | | |_| | |_/ / |__     | |/ /_\ \|  ` | ' / 
+  | | |  _  |  __/|  __|    | ||  _  || .  |  <  
+  | | | | | | |   | |___    | || | | || |\  | . \ 
+  \_/ \_| |_\_|   \____/    \_/\_| |_/\_| \_|_|\_\
+            </pre>
+            <p class="prompt-instruction">ENTER COMBAT CALLSIGN FOR SORTIE LOGGING:</p>
+            
+            <form id="form-login" class="cmd-line-form" onsubmit="return false;">
+              <label for="input-callsign" class="cmd-prompt">CALLSIGN&gt;</label>
+              <input type="text" id="input-callsign" maxlength="15" autocomplete="off" spellcheck="false" placeholder="ENTER_CALLSIGN" autofocus>
+              <button type="submit" id="btn-login-submit" class="btn-dos">[ AUTHENTICATE ]</button>
+            </form>
+            <p class="key-hint">PRESS [ENTER] OR [SPACE] TO ENGAGE SYSTEM</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 2: SETTINGS ================= -->
+      <section id="screen-settings" class="screen">
+        <div class="dos-box settings-box">
+          <div class="dos-box-header">+---[ ARSENAL & DISPLAY CONFIGURATION ]---+</div>
+          <div class="dos-box-content">
+            
+            <!-- Mode Quad Grid -->
+            <div class="mode-quad-grid">
+              <div class="mode-card active" data-mode="mode1">
+                <div class="mode-card-header">MODE 1 [ALPHA]</div>
+                <div class="mode-desc">Standard Lowercase</div>
+                <div class="mode-sample">tank, radar, armor</div>
+              </div>
+
+              <div class="mode-card" data-mode="mode2">
+                <div class="mode-card-header">MODE 2 [BRAVO]</div>
+                <div class="mode-desc">Lowercase + Uppercase</div>
+                <div class="mode-sample">Tank, RadarX, Aegis</div>
+              </div>
+
+              <div class="mode-card" data-mode="mode3">
+                <div class="mode-card-header">MODE 3 [CHARLIE]</div>
+                <div class="mode-desc">Letters + Numbers</div>
+                <div class="mode-sample">Squad5, Tank99, (8+9)</div>
+              </div>
+
+              <div class="mode-card" data-mode="mode4">
+                <div class="mode-card-header">MODE 4 [DELTA]</div>
+                <div class="mode-desc">Full Special Arsenal</div>
+                <div class="mode-sample">[tank-01], {cmd-9}, !alert!</div>
+              </div>
+            </div>
+
+            <!-- Granular Character Matrix Toggles -->
+            <div class="config-row">
+              <span class="config-label">CHARACTER MATRIX:</span>
+              <label class="matrix-toggle">
+                <input type="checkbox" id="chk-lowercase" checked disabled>
+                <span class="toggle-box">[X] Lowercase</span>
+              </label>
+              <label class="matrix-toggle">
+                <input type="checkbox" id="chk-uppercase">
+                <span class="toggle-box">[ ] Uppercase</span>
+              </label>
+              <label class="matrix-toggle">
+                <input type="checkbox" id="chk-numbers">
+                <span class="toggle-box">[ ] Numbers</span>
+              </label>
+              <label class="matrix-toggle">
+                <input type="checkbox" id="chk-specials">
+                <span class="toggle-box">[ ] Specials</span>
+              </label>
+            </div>
+
+            <!-- Aspect Ratio Selector -->
+            <div class="config-row">
+              <span class="config-label">SCREEN ASPECT RATIO:</span>
+              <button class="btn-aspect active" data-aspect="auto">AUTO [SCREEN FIT]</button>
+              <button class="btn-aspect" data-aspect="16:9">16:9 [WIDESCREEN]</button>
+              <button class="btn-aspect" data-aspect="4:3">4:3 [CLASSIC CRT]</button>
+            </div>
+
+            <!-- Dynamic Live Preview Bar -->
+            <div class="preview-bar">
+              <span class="preview-label">LIVE ARSENAL PREVIEW:</span>
+              <span id="live-word-preview" class="preview-words">tank, radar, artillery, turret, vector, tracer</span>
+            </div>
+
+            <div class="screen-footer-actions">
+              <button id="btn-settings-briefing" class="btn-dos btn-large">[ PROCEED TO COMBAT BRIEFING &gt;&gt; ]</button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 3: INSTRUCTIONS ================= -->
+      <section id="screen-instructions" class="screen">
+        <div class="dos-box briefing-box">
+          <div class="dos-box-header">+---[ COMBAT BRIEFING DIRECTIVE ]---+</div>
+          <div class="dos-box-content">
+            
+            <div class="directive-grid">
+              <div class="directive-card">
+                <div class="directive-title">01 // PERIMETER DEFENSE</div>
+                <p>Hostile word targets fall from the upper sector. Neutralize them before they breach the bottom defense perimeter line.</p>
+              </div>
+
+              <div class="directive-card">
+                <div class="directive-title">02 // LOWEST-FIRST LOCK-ON</div>
+                <p>Type matching letters to fire. If multiple targets begin with the same character, targeting <strong>automatically locks onto the lowest word first</strong>.</p>
+              </div>
+
+              <div class="directive-card">
+                <div class="directive-title">03 // BALLISTIC FIRE & FADE</div>
+                <p>Every keystroke fires a visible laser bullet. Typed letters immediately <strong>fade to ~35-40% opacity</strong> while active cursor guides your sequence.</p>
+              </div>
+
+              <div class="directive-card directive-crimson">
+                <div class="directive-title">04 // CRIMSON BONUS TARGETS</div>
+                <p>Red targets fall 1.6x faster and award <strong>3.5x bonus score</strong>. While a red word is active, conflicting words starting with the same letter are suppressed.</p>
+              </div>
+            </div>
+
+            <div class="briefing-prompt-container">
+              <p class="blink-prompt">PRESS [SPACEBAR] OR [ENTER] TO ENGAGE COMBAT SORTIE</p>
+              <button id="btn-start-game" class="btn-dos btn-large btn-crimson">[ ENGAGE TURRET COMBAT ]</button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 4: GAME ARENA ================= -->
+      <section id="screen-game" class="screen">
+        
+        <!-- Live Combat HUD Top Bar -->
+        <div id="game-hud">
+          <div class="hud-cell"><span class="lbl">OPERATOR:</span> <span id="hud-op">OPERATOR-1</span></div>
+          <div class="hud-cell"><span class="lbl">MODE:</span> <span id="hud-mode">ALPHA</span></div>
+          <div class="hud-cell"><span class="lbl">SCORE:</span> <span id="hud-score" class="glowing-green">000000</span></div>
+          <div class="hud-cell"><span class="lbl">COMBO:</span> <span id="hud-combo" class="amber-text">1.0X</span></div>
+          <div class="hud-cell"><span class="lbl">WPM:</span> <span id="hud-wpm">0</span></div>
+          <div class="hud-cell"><span class="lbl">ACC:</span> <span id="hud-acc">100%</span></div>
+          <div class="hud-cell health-cell">
+            <span class="lbl">HULL:</span>
+            <div class="health-bar-track">
+              <div id="hud-health-fill" class="health-fill green" style="width: 100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2D Canvas Combat Arena -->
+        <div id="canvas-container">
+          <canvas id="game-canvas"></canvas>
+        </div>
+
+      </section>
+
+      <!-- ================= SCREEN 5: RESULT DEBRIEF ================= -->
+      <section id="screen-result" class="screen">
+        <div class="dos-box result-box">
+          <div class="dos-box-header">+---[ SORTIE DEBRIEF & ASSESSMENT ]---+</div>
+          <div class="dos-box-content">
+
+            <!-- Flashing Arcade Record Celebration Banner -->
+            <div id="record-banner" class="record-banner hidden">
+              ★ NEW PERSONAL RECORD ACHIEVED! ★
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <div class="metric-label">FINAL SCORE</div>
+                <div id="res-score" class="metric-value glowing-green">000000</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-label">AVERAGE WPM</div>
+                <div id="res-wpm" class="metric-value">0</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-label">ACCURACY</div>
+                <div id="res-acc" class="metric-value">0%</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-label">TARGETS DESTROYED</div>
+                <div id="res-targets" class="metric-value">0</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-label">MAX COMBO</div>
+                <div id="res-combo" class="metric-value amber-text">1.0X</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-label">MODE PLAYED</div>
+                <div id="res-mode" class="metric-value">MODE 1</div>
+              </div>
+            </div>
+
+            <!-- Comparison delta status -->
+            <div id="pb-comparison-box" class="pb-comparison">
+              <!-- Dynamically populated by JS -->
+            </div>
+
+            <div class="result-actions">
+              <button id="btn-result-replay" class="btn-dos btn-large">[ RE-ENGAGE SORTIE (SPACE) ]</button>
+              <button id="btn-result-records" class="btn-dos btn-amber">[ FLIGHT LOGS (R) ]</button>
+              <button id="btn-result-settings" class="btn-dos">[ CONFIGURATION ]</button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SCREEN 6: MY RECORDS ================= -->
+      <section id="screen-records" class="screen">
+        <div class="dos-box records-box">
+          <div class="dos-box-header">+---[ OPERATOR FLIGHT LOGS & PERSONAL BESTS ]---+</div>
+          <div class="dos-box-content">
+
+            <!-- Lifetime Overview -->
+            <div class="lifetime-grid">
+              <div class="life-card">
+                <div class="life-lbl">BEST SCORE</div>
+                <div id="life-score" class="life-val glowing-green">0</div>
+              </div>
+              <div class="life-card">
+                <div class="life-lbl">MAX WPM</div>
+                <div id="life-wpm" class="life-val">0</div>
+              </div>
+              <div class="life-card">
+                <div class="life-lbl">PEAK ACCURACY</div>
+                <div id="life-acc" class="life-val">0%</div>
+              </div>
+              <div class="life-card">
+                <div class="life-lbl">TOTAL DESTROYED</div>
+                <div id="life-targets" class="life-val amber-text">0</div>
+              </div>
+            </div>
+
+            <!-- Mode Bests Quad -->
+            <div class="mode-pb-quad">
+              <div class="pb-card">
+                <div class="pb-title">MODE 1 [ALPHA]</div>
+                <div class="pb-stat">SCORE: <span id="pb-m1-score">0</span></div>
+                <div class="pb-stat">WPM: <span id="pb-m1-wpm">0</span></div>
+              </div>
+              <div class="pb-card">
+                <div class="pb-title">MODE 2 [BRAVO]</div>
+                <div class="pb-stat">SCORE: <span id="pb-m2-score">0</span></div>
+                <div class="pb-stat">WPM: <span id="pb-m2-wpm">0</span></div>
+              </div>
+              <div class="pb-card">
+                <div class="pb-title">MODE 3 [CHARLIE]</div>
+                <div class="pb-stat">SCORE: <span id="pb-m3-score">0</span></div>
+                <div class="pb-stat">WPM: <span id="pb-m3-wpm">0</span></div>
+              </div>
+              <div class="pb-card">
+                <div class="pb-title">MODE 4 [DELTA]</div>
+                <div class="pb-stat">SCORE: <span id="pb-m4-score">0</span></div>
+                <div class="pb-stat">WPM: <span id="pb-m4-wpm">0</span></div>
+              </div>
+            </div>
+
+            <!-- Filterable Log Table -->
+            <div class="log-filter-row">
+              <span class="filter-lbl">FILTER LOGS:</span>
+              <button class="btn-filter active" data-filter="all">ALL MODES</button>
+              <button class="btn-filter" data-filter="mode1">MODE 1</button>
+              <button class="btn-filter" data-filter="mode2">MODE 2</button>
+              <button class="btn-filter" data-filter="mode3">MODE 3</button>
+              <button class="btn-filter" data-filter="mode4">MODE 4</button>
+              
+              <button id="btn-purge-logs" class="btn-micro btn-crimson" title="Purge Log History">[ PURGE LOGS ]</button>
+            </div>
+
+            <div class="table-scroll-wrapper">
+              <table id="logs-table" class="dos-table">
+                <thead>
+                  <tr>
+                    <th>TIMESTAMP</th>
+                    <th>MODE</th>
+                    <th>SCORE</th>
+                    <th>WPM</th>
+                    <th>ACCURACY</th>
+                    <th>MAX COMBO</th>
+                  </tr>
+                </thead>
+                <tbody id="logs-tbody">
+                  <!-- Dynamically populated by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="records-footer-actions">
+              <button id="btn-records-back" class="btn-dos btn-large">[ BACK TO CONFIGURATION ]</button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
